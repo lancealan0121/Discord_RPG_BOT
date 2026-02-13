@@ -2515,13 +2515,11 @@ class MusicPlayer:
                 # 過濾 1: 已經播過的
                 if video_id in played_ids: continue
 
-                # 過濾 2: 標題太像的 (避免一直是同一首歌的不同版本)
-                if difflib.SequenceMatcher(None, title, video_title).ratio() > 0.85: continue
-
-                candidates.append(entry)
-
                 # 🆕 過濾 3: 時長超過 10 分鐘 (600秒) 就跳過
                 if entry.get('duration', 0) > 600: continue
+
+                # 過濾 2: 標題太像的 (避免一直是同一首歌的不同版本)
+                if difflib.SequenceMatcher(None, title, video_title).ratio() > 0.85: continue
 
                 candidates.append(entry)
 
