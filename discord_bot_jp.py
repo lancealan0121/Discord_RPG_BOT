@@ -1066,24 +1066,12 @@ class DataManager:
 
     @classmethod
     def _load_fortune_data(cls, data):
-        """占いデータを読み込む"""
+
         if 'fortunes' in data:
-            for user_id, fortune_data in data['fortunes'].items():
-                if 'date' in fortune_data and isinstance(fortune_data['date'], str):
-                    fortune_data['date'] = datetime.strptime(fortune_data['date'], '%Y-%m-%d').date()
             FortuneSystem.user_fortunes = {int(k): v for k, v in data['fortunes'].items()}
 
         if 'fortune_history' in data:
             FortuneSystem.fortune_history = {int(k): v for k, v in data['fortune_history'].items()}
-
-        # 🆕 ===== これを追加：占いクールダウン時間を読み込む ===== 🆕
-        if 'fortune_cooldowns' in data:
-            for user_id, cooldown_str in data['fortune_cooldowns'].items():
-                try:
-                    FortuneSystem.fortune_cooldowns[int(user_id)] = datetime.fromisoformat(cooldown_str)
-                except:
-                    pass  # 解析失敗したら無視
-        # ============================================
 
     @classmethod
     def _print_load_summary(cls):
@@ -1195,7 +1183,6 @@ class DataManager:
             'stock_price_history': StockSystem.price_history,
             'fortunes': fortune_data,
             'fortune_history': FortuneSystem.fortune_history,
-            'fortune_cooldowns': fortune_cooldowns_data,  # 🆕 これを追加
             'achievements': AchievementSystem.user_achievements,
             'achievement_tracking': AchievementSystem.user_tracking,
             'shop_inventory': shop_data,
@@ -5757,8 +5744,6 @@ class FortuneSystem:
 
     # ユーザー占いデータ
     user_fortunes: Dict[int, dict] = {}
-    fortune_history: Dict[int, list] = {}
-    fortune_cooldowns: Dict[int, datetime] = {}  # 🆕 クールタイム追跡
 
     # 🔧 ===== クールタイム設定（ここを変更）===== 🔧
     FORTUNE_COOLDOWN = 1  # デフォルト12時間（43200秒）
@@ -6008,81 +5993,27 @@ class FortuneSystem:
         "⚡ 雷が鳴った時ちょうど元恋人のことを考えていました"
     ]
 
-    # 🆕 ===== クールタイムチェック機能 ===== 🆕
-    @classmethod
-    def check_cooldown(cls, user_id: int) -> Tuple[bool, Optional[str]]:
-        """
-        占い可能かチェック
-        戻り値：(可能か、エラーメッセージ)
-        """
-        # クールタイムが0の場合、直接許可
-        if cls.FORTUNE_COOLDOWN == 0:
-            return True, None
-
-        # クールタイム記録があるかチェック
-        if user_id not in cls.fortune_cooldowns:
-            return True, None
-
-        # 経過時間を計算
-        elapsed = (datetime.now() - cls.fortune_cooldowns[user_id]).total_seconds()
-        remaining = cls.FORTUNE_COOLDOWN - elapsed
-
-        # クールタイム終了
-        if remaining <= 0:
-            return True, None
-
-        # まだクールタイム中、残り時間をフォーマット
-        hours = int(remaining // 3600)
-        minutes = int((remaining % 3600) // 60)
-        seconds = int(remaining % 60)
-
-        # 残り時間に応じて表示形式を選択
-        if hours > 0:
-            time_str = f"{hours}時間{minutes}分"
-        elif minutes > 0:
-            time_str = f"{minutes}分{seconds}秒"
-        else:
-            time_str = f"{seconds}秒"
-
-        error_msg = f"⏰ 占いクールタイム中！\n残り時間：**{time_str}**"
-        return False, error_msg
-
-    @classmethod
-    def set_cooldown(cls, user_id: int):
-        """クールタイムを設定"""
-        cls.fortune_cooldowns[user_id] = datetime.now()
-
     @classmethod
     def get_today_fortune(cls, user_id: int) -> dict:
-        """今日の運勢を取得"""
-        # 運勢を抽選
+
         fortune = cls._roll_fortune()
         special_event = random.choice(cls.SPECIAL_EVENTS) if random.random() < 0.3 else None
 
-        # 占いを記録
-        today = date.today()
         cls.user_fortunes[user_id] = {
-            'date': today,
             'fortune_id': fortune['id'],
             'special_event': special_event
         }
 
-        # 履歴を記録
         if user_id not in cls.fortune_history:
             cls.fortune_history[user_id] = []
 
         cls.fortune_history[user_id].append({
-            'date': today.strftime('%Y-%m-%d'),
             'fortune': fortune['name'],
             'fortune_id': fortune['id']
         })
 
-        # 直近30日分のみ保持
         if len(cls.fortune_history[user_id]) > 30:
             cls.fortune_history[user_id] = cls.fortune_history[user_id][-30:]
-
-        # 🆕 クールタイムを設定
-        cls.set_cooldown(user_id)
 
         return cls._get_fortune_data(fortune['id'], special_event)
 
@@ -6142,49 +6073,42 @@ class FortuneSystem:
 
 # ==================== 占いコマンド ====================
 
-@bot.tree.command(name="占い", description="🔮 毎日の運勢占い")
+@bot.tree.command(name="占い", description="🔮 毎日の運勢占い（完全エンタメ）")
 async def daily_fortune(interaction: discord.Interaction):
     """毎日の占い"""
     user_id = interaction.user.id
 
-    # 🆕 クールタイムチェック
-    can_do, error_msg = FortuneSystem.check_cooldown(user_id)
-    if not can_do:
-        await interaction.response.send_message(error_msg, ephemeral=True)
-        return
-
-    # 今日の運勢を取得
+    # 🆕 直接運勢を取得（クールダウンなし）
     fortune_data = FortuneSystem.get_today_fortune(user_id)
     fortune = fortune_data['fortune']
     message = fortune_data['message']
     advice = fortune_data['advice']
     special_event = fortune_data['special_event']
 
-    # 華麗なEmbedを作成
+    # 豪華なEmbedを作成
     embed = discord.Embed(
-        title=f"🔮 {interaction.user.display_name} の毎日の占い",
+        title=f"🔮 {interaction.user.display_name} さんの占い結果",
         description=f"**{fortune['emoji']} {fortune['title']} {fortune['emoji']}**",
-        color=fortune['color'],
-        timestamp=datetime.now()
+        color=fortune['color']
     )
 
     embed.set_thumbnail(url=interaction.user.display_avatar.url)
 
     embed.add_field(
-        name="📊 今日の運勢",
+        name="📊 運勢",
         value=f"# {fortune['name']}",
         inline=False
     )
 
     embed.add_field(
-        name="💬 運勢解析",
+        name="💬 運勢解説",
         value=f"*{message}*",
         inline=False
     )
 
     if special_event:
         embed.add_field(
-            name="✨ 特別な兆候",
+            name="✨ 特別な兆し",
             value=special_event,
             inline=False
         )
@@ -6198,35 +6122,22 @@ async def daily_fortune(interaction: discord.Interaction):
 
     if fortune['id'] == 'supreme':
         embed.add_field(
-            name="🎊 おめでとうございます！",
-            value="今日万に一つの「極吉」を引きました！\nこれは1%の確率！今日はあなたの日です！",
+            name="🎊 おめでとう！",
+            value="超レアな「大大吉」を引きました！当選確率はわずか1％！",
             inline=False
         )
     elif fortune['id'] == 'catastrophe':
         embed.add_field(
-            name="⚠️ 警告",
-            value="今日の運勢は極めて悪いです、何もしないことをお勧めします...\n本当に、私の言うことを聞いて。",
+            name="⚠️ 注意",
+            value="運勢が非常に悪い日です…今日は無理をしないようにしましょう。",
             inline=False
         )
 
-    # 🆕 次回占い時間を表示
-    if FortuneSystem.FORTUNE_COOLDOWN > 0:
-        next_time = datetime.now() + timedelta(seconds=FortuneSystem.FORTUNE_COOLDOWN)
-        hours = FortuneSystem.FORTUNE_COOLDOWN // 3600
-        minutes = (FortuneSystem.FORTUNE_COOLDOWN % 3600) // 60
-
-        if hours > 0:
-            cooldown_text = f"{hours}時間"
-        elif minutes > 0:
-            cooldown_text = f"{minutes}分"
-        else:
-            cooldown_text = f"{FortuneSystem.FORTUNE_COOLDOWN}秒"
-
-        embed.set_footer(text=f"⏰ 次回占い時間：{cooldown_text}後 | 娯楽目的、ゲーム数値に影響しません")
-    else:
-        embed.set_footer(text="💡 クールタイム制限なし、いつでも占い可能 | 娯楽目的、ゲーム数値に影響しません")
+    # 🆕 クールダウンなしの表示
+    embed.set_footer(text="💡 エンタメ目的のみ | いつでも占えます")
 
     await interaction.response.send_message(embed=embed)
+
 
 
 @bot.tree.command(name="占い統計", description="📊 占い履歴統計を見る")
