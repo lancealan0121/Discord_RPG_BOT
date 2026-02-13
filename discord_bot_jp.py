@@ -2492,15 +2492,17 @@ class MusicPlayer:
                 video_id = entry.get('id')
                 video_title = entry.get('title')
 
-                # フィルター 1: 既に再生済み
+                # 過濾 1: 已經播過的
                 if video_id in played_ids: continue
 
-                # フィルター 2: タイトルが似すぎている (同じ曲の別バージョンを避ける)
-                if difflib.SequenceMatcher(None, title, video_title).ratio() > 0.85: continue
-
-                # 🆕 フィルター 3: 10分（600秒）を超える場合はスキップ
+                # 🆕 過濾 3: 時長超過 10 分鐘 (600秒) 就跳過
                 if entry.get('duration', 0) > 600: continue
 
+                # 過濾 2: 標題太像的 (避免一直是同一首歌的不同版本)
+                if difflib.SequenceMatcher(None, title, video_title).ratio() > 0.85: continue
+
+
+                # ✅ 通過所有過濾條件，才加入候選名單
                 candidates.append(entry)
 
             if candidates:
