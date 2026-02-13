@@ -1157,19 +1157,14 @@ class DataManager:
                 for trade in trades
             ]
 
-        # 🆕 占卜資料（處理 date 物件）
+        # 🆕 占卜資料（簡化版，不處理 datetime）
         fortune_data = {}
         for user_id, fortune in FortuneSystem.user_fortunes.items():
             fortune_data[user_id] = {
-                'date': fortune['date'].strftime('%Y-%m-%d') if isinstance(fortune.get('date'), date) else fortune.get(
-                    'date'),
                 'fortune_id': fortune.get('fortune_id'),
                 'special_event': fortune.get('special_event')
             }
 
-        fortune_cooldowns_data = {}
-        for user_id, cooldown_time in FortuneSystem.fortune_cooldowns.items():
-            fortune_cooldowns_data[user_id] = cooldown_time.isoformat()
         # ============================================
 
         # 組合所有資料
