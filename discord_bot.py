@@ -3980,6 +3980,7 @@ async def rob_player(interaction: discord.Interaction, 對象: discord.User, 金
 
 
 # ==================== ⚔️ 單挑系統 ====================
+# ==================== ⚔️ 單挑系統（修復版 + 超多創意文字）====================
 class DuelSystem:
     """
     單挑系統
@@ -3997,6 +3998,15 @@ class DuelSystem:
         "😈 **{attacker}** 拿出了無限手套，彈了一下手指... **{defender}** 化為了灰燼。",
         "🛑 **{attacker}** 使用了「砸瓦魯多」暫停了時間，並丟出了壓路機！ **{defender}** 毫無還手之力！",
         "🔧 **{attacker}** 發現了這個遊戲的 Bug，直接把 **{defender}** 的血條刪除了。",
+        "🗡️ **{attacker}** 召喚了「王之財寶」，無數寶具從天而降！ **{defender}** 被秒殺！",
+        "💀 **{attacker}** 使用了死神筆記本，寫下了 **{defender}** 的名字...",
+        "🔥 **{attacker}** 發動了「炎炎烈日」，**{defender}** 直接蒸發了！",
+        "❄️ **{attacker}** 使用了「絕對零度」，**{defender}** 被凍成冰雕後碎裂！",
+        "⚡ **{attacker}** 釋放了千鳥，直接穿透了 **{defender}** 的心臟！",
+        "🌊 **{attacker}** 召喚了海嘯，**{defender}** 被捲入深海再也沒有浮上來...",
+        "💥 **{attacker}** 使用了大爆炸，**{defender}** 連屍骨都不剩！",
+        "🎯 **{attacker}** 開啟了自瞄外掛，爆頭一擊必殺！",
+        "🚀 **{attacker}** 發射了核彈，**{defender}** 所在的城市都消失了...",
     ]
 
     # 2. 爆擊 (15%) - 傷害 30~50
@@ -4008,6 +4018,24 @@ class DuelSystem:
         "🚗 **{attacker}** 召喚了一輛異世界卡車，高速衝撞了 **{defender}**！ (轉生爆擊)",
         "🐉 **{attacker}** 召喚了青眼白龍，發動了毀滅的噴射白光！ (粉碎玉碎大喝采)",
         "🧠 **{attacker}** 揭露了 **{defender}** 的黑歷史，造成了巨大的精神傷害！ (真實傷害)",
+        "⚔️ **{attacker}** 使用了「拔刀術」，**{defender}** 連反應都來不及！ (先制攻擊)",
+        "🦵 **{attacker}** 踢出了「無影腳」，**{defender}** 被踢飛十公尺！",
+        "👊 **{attacker}** 使用了「北斗百裂拳」，**{defender}** 已經死了！",
+        "🎸 **{attacker}** 彈奏了魔音，**{defender}** 的耳膜破裂！ (音波攻擊)",
+        "🔨 **{attacker}** 拿起雷神之錘，一擊把 **{defender}** 砸進地底！",
+        "🏹 **{attacker}** 射出了穿心箭，正中 **{defender}** 的要害！",
+        "💎 **{attacker}** 使用了「鑽石拳」，**{defender}** 的護甲碎裂！",
+        "🌪️ **{attacker}** 召喚了龍捲風，**{defender}** 被捲上天空！",
+        "☄️ **{attacker}** 召喚了隕石，**{defender}** 被砸中腦袋！",
+        "🦈 **{attacker}** 召喚了鯊魚，**{defender}** 的腿被咬斷了！",
+        "🕷️ **{attacker}** 放出了劇毒蜘蛛，**{defender}** 中毒了！",
+        "🔪 **{attacker}** 使用了「背刺」，造成了 300% 傷害！",
+        "💀 **{attacker}** 使用了「死亡宣告」，**{defender}** 被詛咒了！",
+        "⚡ **{attacker}** 釋放了「雷霆萬鈞」，**{defender}** 被電成焦炭！",
+        "🧨 **{attacker}** 丟出了 C4 炸藥，**{defender}** 被炸飛了！",
+        "🎭 **{attacker}** 使用了「幻術」，**{defender}** 攻擊了自己！",
+        "🌙 **{attacker}** 發動了「月讀」，**{defender}** 在幻境中被折磨了 72 小時！",
+        "🔥 **{attacker}** 使用了「天照」，黑色火焰燒盡了 **{defender}**！",
     ]
 
     # 3. 防禦/回復 (15%) - 回復 15~30
@@ -4019,6 +4047,19 @@ class DuelSystem:
         "💉 **{attacker}** 拿出了急救包，幫自己貼了個 OK 繃。(HP +{heal})",
         "🛡️ **{attacker}** 發動了「絕對防禦」，順便睡了個午覺。(HP +{heal})",
         "✨ **{attacker}** 受到女神的眷顧，聖光治癒了他的傷口。(HP +{heal})",
+        "🍖 **{attacker}** 啃了一口烤肉，體力恢復了！(HP +{heal})",
+        "☕ **{attacker}** 喝了一杯咖啡，精神抖擻！(HP +{heal})",
+        "🍜 **{attacker}** 吃了一碗拉麵，血條瞬間回滿！(HP +{heal})",
+        "🧃 **{attacker}** 喝了一瓶能量飲料，活力四射！(HP +{heal})",
+        "🍎 **{attacker}** 吃了一顆蘋果，醫生遠離我。(HP +{heal})",
+        "🌟 **{attacker}** 撿到了回血包，運氣真好！(HP +{heal})",
+        "💤 **{attacker}** 小睡了一下，傷口癒合了。(HP +{heal})",
+        "🔮 **{attacker}** 使用了治療術，傷口發光癒合。(HP +{heal})",
+        "🎵 **{attacker}** 聽了一首療癒的音樂，心情變好了。(HP +{heal})",
+        "🌿 **{attacker}** 使用了草系技能「光合作用」。(HP +{heal})",
+        "💧 **{attacker}** 喝了一口聖水，傷勢好轉。(HP +{heal})",
+        "🕊️ **{attacker}** 召喚了和平鴿，帶來了治癒之力。(HP +{heal})",
+        "🌈 **{attacker}** 看到了彩虹，心情變好，傷勢減輕。(HP +{heal})",
     ]
 
     # 4. 普通攻擊 (50%) - 傷害 10~25
@@ -4033,6 +4074,47 @@ class DuelSystem:
         "📱 **{attacker}** 拿 Nokia 3310 砸向 **{defender}** 的腦門。",
         "📢 **{attacker}** 在 **{defender}** 耳邊大喊「還錢」！",
         "🏀 **{attacker}** 使用了運球過人，順便肘擊了 **{defender}**。",
+        "🪑 **{attacker}** 拿起椅子，WWE 摔角手附體！",
+        "🥄 **{attacker}** 用湯匙挖了 **{defender}** 一勺！",
+        "🧹 **{attacker}** 拿起掃把，把 **{defender}** 當垃圾掃！",
+        "🔔 **{attacker}** 拿鈴鐺在 **{defender}** 耳邊搖，吵死了！",
+        "📚 **{attacker}** 用厚重的字典砸 **{defender}** 的頭！",
+        "🥊 **{attacker}** 使用了直拳，打中了 **{defender}** 的鼻子！",
+        "🦶 **{attacker}** 踩了 **{defender}** 的腳，疼！",
+        "👋 **{attacker}** 巴了 **{defender}** 一巴掌！",
+        "🪛 **{attacker}** 拿螺絲起子戳了 **{defender}** 一下！",
+        "🔨 **{attacker}** 拿鐵鎚敲了 **{defender}** 的膝蓋！",
+        "🎯 **{attacker}** 丟飛鏢，插在 **{defender}** 的屁股上！",
+        "🪃 **{attacker}** 丟出回力鏢，打到 **{defender}** 的後腦勺！",
+        "🎱 **{attacker}** 拿撞球砸向 **{defender}**！",
+        "🏓 **{attacker}** 用球拍抽了 **{defender}** 的臉！",
+        "🥍 **{attacker}** 用球棒敲了 **{defender}** 的頭！",
+        "🎾 **{attacker}** 發球，直接打中 **{defender}** 的要害！",
+        "⛳ **{attacker}** 揮出高爾夫球桿，打中了 **{defender}**！",
+        "🏏 **{attacker}** 用板球拍擊中 **{defender}**！",
+        "🏑 **{attacker}** 用曲棍球桿掃向 **{defender}** 的腳！",
+        "🥌 **{attacker}** 推出冰壺，砸中 **{defender}** 的腳趾！",
+        "🎿 **{attacker}** 用滑雪杖戳了 **{defender}**！",
+        "🛹 **{attacker}** 用滑板砸向 **{defender}** 的臉！",
+        "🛼 **{attacker}** 穿著直排輪撞向 **{defender}**！",
+        "🚴 **{attacker}** 騎腳踏車撞飛了 **{defender}**！",
+        "🛴 **{attacker}** 用滑板車的把手戳 **{defender}** 的肚子！",
+        "🏍️ **{attacker}** 騎摩托車從 **{defender}** 身上輾過去！",
+        "🚙 **{attacker}** 開車撞飛了 **{defender}**！",
+        "✈️ **{attacker}** 用紙飛機射中 **{defender}** 的眼睛！",
+        "🪁 **{attacker}** 用風箏纏住 **{defender}** 的脖子！",
+        "🎈 **{attacker}** 用氣球打 **{defender}** 的頭，很輕但很煩！",
+        "🎀 **{attacker}** 用緞帶勒住 **{defender}** 的脖子！",
+        "🧵 **{attacker}** 用線纏住 **{defender}** 的手腳！",
+        "🪡 **{attacker}** 用針扎了 **{defender}** 一下！",
+        "✂️ **{attacker}** 用剪刀剪了 **{defender}** 的頭髮！",
+        "📌 **{attacker}** 用圖釘刺 **{defender}** 的屁股！",
+        "📍 **{attacker}** 用大頭針扎 **{defender}**！",
+        "🔗 **{attacker}** 用鐵鍊抽打 **{defender}**！",
+        "🪝 **{attacker}** 用掛鉤勾住 **{defender}** 的衣服！",
+        "🧲 **{attacker}** 用磁鐵吸走 **{defender}** 的假牙！",
+        "🔋 **{attacker}** 用電池電擊 **{defender}**！",
+        "💡 **{attacker}** 用燈泡砸 **{defender}** 的頭！",
     ]
 
     # 5. 失誤 (19%) - 沒傷害
@@ -4044,6 +4126,30 @@ class DuelSystem:
         "🚫 **{attacker}** 的攻擊被 **{defender}** 用臉接住了！(但是 **{defender}** 臉皮太厚，沒受傷)",
         "🐛 **{attacker}** 遇到 Bug，技能冷卻中...",
         "💃 **{attacker}** 突然開始跳起街舞，錯過了攻擊機會。",
+        "🎮 **{attacker}** 手把斷線了，連不上伺服器！",
+        "📞 **{attacker}** 的媽媽打電話來，要他回家吃飯。",
+        "🦟 **{attacker}** 被蚊子咬了，在那邊抓癢。",
+        "🌞 **{attacker}** 被太陽閃到眼睛，看不見了。",
+        "💩 **{attacker}** 踩到狗屎滑倒了，攻擊失敗。",
+        "🍌 **{attacker}** 踩到香蕉皮，華麗地滑倒了。",
+        "🕳️ **{attacker}** 掉進了陷阱，爬不出來。",
+        "🌧️ **{attacker}** 被雨淋濕了，凍僵無法動彈。",
+        "❄️ **{attacker}** 手凍僵了，握不住武器。",
+        "🔥 **{attacker}** 被火燙到，丟掉了武器。",
+        "💧 **{attacker}** 滑倒在水灘上，摔了個狗吃屎。",
+        "🌪️ **{attacker}** 被風吹歪了，攻擊偏離目標。",
+        "⚡ **{attacker}** 被靜電電到，手麻了。",
+        "🦅 **{attacker}** 被老鷹叼走了假髮，嚇到無法攻擊。",
+        "🐝 **{attacker}** 被蜜蜂螫了，痛到跳起來。",
+        "🦂 **{attacker}** 被蠍子螫到，中毒麻痺了。",
+        "🐍 **{attacker}** 被蛇嚇到，嚇得動不了。",
+        "🦎 **{attacker}** 被蜥蜴爬過，癢得要命。",
+        "🐸 **{attacker}** 被青蛙跳到臉上，視線被擋住。",
+        "🦗 **{attacker}** 被蟋蟀的叫聲吵到分心。",
+        "🪰 **{attacker}** 被蒼蠅煩死了，一直趕蒼蠅。",
+        "🕸️ **{attacker}** 被蜘蛛網纏住，動彈不得。",
+        "🦇 **{attacker}** 被蝙蝠撞到頭，暈了。",
+        "🐁 **{attacker}** 被老鼠嚇到，跳起來尖叫。",
     ]
 
     @staticmethod
@@ -4054,7 +4160,7 @@ class DuelSystem:
         fill = int(percentage * length)
         empty = length - fill
 
-        # 根據血量變色 (這裡只是裝飾符號，Discord Embed 顏色會另外變)
+        # 根據血量變色
         status_icon = "💚"
         if percentage < 0.5: status_icon = "💛"
         if percentage < 0.2: status_icon = "❤️"
@@ -4072,6 +4178,9 @@ class DuelSystem:
         max_hp = 100
         hp = {player.id: max_hp, target.id: max_hp}
 
+        # 🆕 追蹤是否已使用復活裝置
+        used_revive = {player.id: False, target.id: False}
+
         # 建立初始訊息
         embed = discord.Embed(
             title="⚔️ 世紀對決開始！",
@@ -4086,16 +4195,15 @@ class DuelSystem:
 
         # 戰鬥變數
         turn_count = 0
-        log_history = []  # 記錄戰鬥過程
 
-        # 決定先手 (50% 機率)
+        # 決定先手
         attacker = player if random.choice([True, False]) else target
         defender = target if attacker == player else player
 
         # 當雙方都還有血時
-        while hp[player.id] > 0 and hp[target.id] > 0:
+        while True:
             turn_count += 1
-            await asyncio.sleep(3.5)  # ⏳ 稍微加長一點時間讓大家看字
+            await asyncio.sleep(3.5)
 
             # ===== 機率與數值判定 =====
             rand = random.uniform(0, 100)
@@ -4109,7 +4217,7 @@ class DuelSystem:
                 damage = 9999
                 template = random.choice(DuelSystem.GOD_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
-                current_color = discord.Color.purple()  # 神話色
+                current_color = discord.Color.purple()
 
             # 2. 爆擊 (15%)
             elif rand < 16:
@@ -4117,16 +4225,15 @@ class DuelSystem:
                 template = random.choice(DuelSystem.CRIT_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
                 action_text += f"\n💥 **造成了 {damage} 點爆擊傷害！**"
-                current_color = discord.Color.dark_red()  # 爆擊紅
+                current_color = discord.Color.dark_red()
 
             # 3. 防禦/回復 (15%)
             elif rand < 31:
                 heal = random.randint(15, 30)
-                # 確保不超過上限
                 hp[attacker.id] = min(max_hp, hp[attacker.id] + heal)
                 template = random.choice(DuelSystem.HEAL_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name, heal=heal)
-                current_color = discord.Color.green()  # 治療綠
+                current_color = discord.Color.green()
 
             # 4. 普通攻擊 (50%)
             elif rand < 81:
@@ -4134,20 +4241,17 @@ class DuelSystem:
                 template = random.choice(DuelSystem.NORMAL_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
                 action_text += f"\n💢 造成了 **{damage}** 點傷害。"
-                current_color = discord.Color.orange()  # 普攻橘
+                current_color = discord.Color.orange()
 
             # 5. 失誤 (19%)
             else:
                 template = random.choice(DuelSystem.MISS_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
-                current_color = discord.Color.blue()  # 失誤藍
+                current_color = discord.Color.blue()
 
             # ===== 結算血量 =====
             if damage > 0:
                 hp[defender.id] -= damage
-
-            # 更新戰鬥紀錄 (顯示最近 1 條大的 + 之前 2 條小的，避免太長)
-            # 這裡改為：每次只顯示當前回合的詳細動作，下方用小字顯示歷史
 
             log_str = f"第 {turn_count} 回合：\n{action_text}"
 
@@ -4164,28 +4268,53 @@ class DuelSystem:
 
             await message.edit(embed=embed)
 
-            # 交換攻守 (除非一方已經死了，直接跳出迴圈)
-            if hp[player.id] <= 0 or hp[target.id] <= 0:
-                break
+            # 🆕 ===== 修復：復活裝置檢查邏輯 =====
+            # 只有在血量 <= 0 且尚未使用過復活時才觸發
+            if hp[player.id] <= 0 and not used_revive[player.id]:
+                if ShopSystem.has_active_item(player.id, 'revive_device'):
+                    ShopSystem.use_consumable(player.id, 'revive_device')
+                    hp[player.id] = 50  # 復活 50 HP
+                    used_revive[player.id] = True  # 標記已使用
 
+                    revive_embed = discord.Embed(
+                        title="⚡ 復活裝置啟動！",
+                        description=f"**{player.display_name}** 使用了復活裝置，恢復 50 HP！",
+                        color=discord.Color.blue()
+                    )
+                    await message.edit(embed=revive_embed)
+                    await asyncio.sleep(2)
+
+            if hp[target.id] <= 0 and not used_revive[target.id]:
+                if ShopSystem.has_active_item(target.id, 'revive_device'):
+                    ShopSystem.use_consumable(target.id, 'revive_device')
+                    hp[target.id] = 50
+                    used_revive[target.id] = True
+
+                    revive_embed = discord.Embed(
+                        title="⚡ 復活裝置啟動！",
+                        description=f"**{target.display_name}** 使用了復活裝置，恢復 50 HP！",
+                        color=discord.Color.blue()
+                    )
+                    await message.edit(embed=revive_embed)
+                    await asyncio.sleep(2)
+
+            # 檢查是否真的戰鬥結束（雙方都已復活過或真的死亡）
+            if hp[player.id] <= 0 and used_revive[player.id]:
+                break  # 玩家 1 真的死了
+            if hp[target.id] <= 0 and used_revive[target.id]:
+                break  # 玩家 2 真的死了
+            if hp[player.id] <= 0 and not ShopSystem.has_active_item(player.id, 'revive_device'):
+                break  # 玩家 1 沒有復活裝置
+            if hp[target.id] <= 0 and not ShopSystem.has_active_item(target.id, 'revive_device'):
+                break  # 玩家 2 沒有復活裝置
+
+            # 交換攻守
             attacker, defender = defender, attacker
 
         # ===== 戰鬥結束 =====
         await asyncio.sleep(1.5)
 
-        if hp[player.id] <= 0 and ShopSystem.has_active_item(player.id, 'revive_device'):
-            ShopSystem.use_consumable(player.id, 'revive_device')
-            hp[player.id] = 50  # 復活 50 HP
-
-            revive_embed = discord.Embed(
-                title="⚡ 復活裝置啟動！",
-                description=f"**{player.display_name}** 使用了復活裝置，滿血復活！",
-                color=discord.Color.blue()
-            )
-            await message.edit(embed=revive_embed)
-            await asyncio.sleep(2)
-
-        # 在決鬥結束後（原本的程式碼）
+        # 判定勝者
         winner = player if hp[player.id] > 0 else target
         loser = target if winner == player else player
 
@@ -4210,7 +4339,7 @@ class DuelSystem:
             inline=False
         )
 
-        # ===== 🆕 顯示積分變化 =====
+        # 顯示積分變化
         winner_rank_info = RankingSystem.get_rank_info(winner_change['new_rank'])
         loser_rank_info = RankingSystem.get_rank_info(loser_change['new_rank'])
 
@@ -4225,7 +4354,7 @@ class DuelSystem:
 
         end_embed.add_field(name="📊 積分變化", value=points_text, inline=False)
 
-        # 隨機一句結束語
+        # 隨機結束語
         win_quotes = ["贏家通吃！", "實力差距懸殊。", "險勝！", "運氣也是實力的一部分。"]
         end_embed.set_footer(text=random.choice(win_quotes))
 
@@ -4234,7 +4363,6 @@ class DuelSystem:
         tracking['duel_wins'] += 1
 
         await message.edit(embed=end_embed)
-
 
 @bot.tree.command(name="單挑", description="與朋友進行一場隨機的回合制決鬥")
 @app_commands.describe(對象="要挑戰的對象")
