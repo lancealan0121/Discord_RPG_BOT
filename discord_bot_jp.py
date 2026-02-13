@@ -392,10 +392,10 @@ class GambleSystem:
 
         # ===== 🆕 ショップバフボーナス =====
         if ShopSystem.has_active_item(user_id, 'gamble_boost'):
-            win_rate += 15.0  # ギャンブル神のお守り +15%
-            win_rate = min(win_rate, 95.0)  # 上限95%
+            win_rate += 0.15
+            win_rate = min(win_rate, 0.95)
 
-        is_win = random.random() < (win_rate / 100)
+        is_win = random.random() < win_rate
 
         # ===== 連勝追跡（実績用） =====
         tracking = AchievementSystem.get_user_tracking(user_id)
