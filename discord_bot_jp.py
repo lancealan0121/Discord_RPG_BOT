@@ -1329,20 +1329,20 @@ async def transfer(interaction: discord.Interaction, 対象: discord.User, 金�
 
 # ==================== 🎮 お金稼ぎミニゲーム ====================
 
-@bot.tree.command(name="お金を稼ぐ", description="数学問題に答えてお金を稼ぐ（クールダウン 5 秒）")
-async def earn_money_math(interaction: discord.Interaction):
+@bot.tree.command(name="稼ぐ", description="数学の問題に答えてお金を稼ぐ（クールタイム5秒）")
+async def earn_money_jp(interaction: discord.Interaction):
     user_id = interaction.user.id
 
-    # クールダウンチェック
+    # 檢查冷卻
     remaining = MoneySystem.check_cooldown(user_id)
     if remaining is not None:
         await interaction.response.send_message(
-            f"⏰ クールダウン中！**{remaining}** 秒お待ちください",
+            f"⏰ クールタイム中！あと **{remaining}** 秒お待ちください",
             ephemeral=True
         )
         return
 
-    # 数学問題を生成
+    # 生成數學題
     num1 = random.randint(1, 50)
     num2 = random.randint(1, 50)
     operation = random.choice(['+', '-', '*'])
@@ -1358,7 +1358,7 @@ async def earn_money_math(interaction: discord.Interaction):
         question = f"{num1} × {num2}"
 
     await interaction.response.send_message(
-        f"🧮 **数学問題タイム！**\n"
+        f"🧮 **数学タイム！**\n"
         f"10秒以内に答えてください：\n"
         f"**{question} = ?**"
     )
@@ -1376,23 +1376,47 @@ async def earn_money_math(interaction: discord.Interaction):
             return
 
         if user_answer == answer:
-            # クールダウンを設定
+            # 設置冷卻
             MoneySystem.set_cooldown(user_id)
 
-            # 報酬
+            # 計算獎勵
             if random.random() < 0.4:
-                reward = random.randint(20, 300)
+                base_reward = random.randint(20, 300)
             else:
-                reward = random.randint(300, 2200)
+                base_reward = random.randint(300, 2200)
 
-            MoneySystem.add_money(user_id, reward)
+            # 檢查發財符
+            has_double = ShopSystem.has_active_item(user_id, 'double_money')
+
+            if has_double:
+                actual_reward = base_reward * 2
+            else:
+                actual_reward = base_reward
+
+            # 手動加錢
+            MoneySystem.user_money[user_id] = MoneySystem.user_money.get(user_id, 0) + actual_reward
+            MoneySystem._update_stats(user_id, 'total_earned', base_reward)
+
             current_money = MoneySystem.get_money(user_id)
+
+            # 根據是否雙倍顯示不同訊息
+            if has_double:
+                message = (
+                    f"✅ **正解！**\n"
+                    f"💰 基本報酬：**{base_reward}** 円\n"
+                    f"✨ **発財符が発動！報酬2倍！**\n"
+                    f"💵 実際獲得：**{actual_reward}** 円 (x2)\n"
+                    f"📊 現在の所持金：**{current_money}** 円"
+                )
+            else:
+                message = (
+                    f"✅ **正解！**\n"
+                    f"💰 獲得 **{actual_reward}** 円\n"
+                    f"📊 現在の所持金：**{current_money}** 円"
+                )
+
             await AchievementSystem.check_and_unlock(user_id, interaction.channel)
-            await interaction.followup.send(
-                f"✅ **正解！**\n"
-                f"💰 **{reward}** 円獲得\n"
-                f"現在のお金：**{current_money}** 円"
-            )
+            await interaction.followup.send(message)
         else:
             MoneySystem.deduct_money(user_id, 200)
             current_money = MoneySystem.get_money(user_id)
@@ -1400,15 +1424,15 @@ async def earn_money_math(interaction: discord.Interaction):
             await interaction.followup.send(
                 f"❌ **不正解！**\n"
                 f"正解は：**{answer}**\n"
-                f"💸 **200** 円減少\n"
-                f"現在のお金：**{current_money}** 円"
+                f"💸 **200** 円を失いました\n"
+                f"現在の所持金：**{current_money}** 円"
             )
 
     except asyncio.TimeoutError:
-        await interaction.followup.send("⏰ 時間切れ！回答なし")
+        await interaction.followup.send("⏰ タイムアップ！回答なし")
 
 
-@bot.tree.command(name="数当て", description="数当てゲーム（1-5、1000円賭けて、当たれば4500円獲得）")
+@bot.tree.command(name="数当て", description="数当てゲーム（1-5、賭け金1000円、当たれば4500円）")
 @app_commands.describe(数字="あなたの予想（1-5）")
 @app_commands.choices(数字=[
     app_commands.Choice(name='1', value=1),
@@ -1417,37 +1441,64 @@ async def earn_money_math(interaction: discord.Interaction):
     app_commands.Choice(name='4', value=4),
     app_commands.Choice(name='5', value=5),
 ])
-async def guess_number(interaction: discord.Interaction, 数字: app_commands.Choice[int]):
-    """数当てゲーム"""
+async def guess_number_jp(interaction: discord.Interaction, 数字: app_commands.Choice[int]):
+    """数当てゲーム（日語版）"""
     user_id = interaction.user.id
     bet = 1000
-    reward = 4500
+    base_reward = 4500
 
-    # お金チェック
+    # 檢查金錢
     if not MoneySystem.deduct_money(user_id, bet):
         current_money = MoneySystem.get_money(user_id)
         await interaction.response.send_message(
-            f"❌ お金が足りません！**{bet}** 円必要、所持金は **{current_money}** 円",
+            f"❌ 所持金不足！**{bet}** 円必要ですが、**{current_money}** 円しかありません",
             ephemeral=True
         )
         return
 
-    # ゲームロジック
+    # 遊戲邏輯
     answer = MiniGames.guess_number_game()
     player_guess = 数字.value
 
     MoneySystem.get_stats(user_id)['games_played'] += 1
 
     if player_guess == answer:
-        MoneySystem.add_money(user_id, reward)
+        # 檢查發財符
+        has_double = ShopSystem.has_active_item(user_id, 'double_money')
+
+        if has_double:
+            actual_reward = base_reward * 2
+        else:
+            actual_reward = base_reward
+
+        # 手動加錢
+        MoneySystem.user_money[user_id] = MoneySystem.user_money.get(user_id, 0) + actual_reward
+        MoneySystem._update_stats(user_id, 'total_earned', base_reward)
+
         MoneySystem.get_stats(user_id)['games_won'] += 1
+        current_money = MoneySystem.get_money(user_id)
+
         await AchievementSystem.check_and_unlock(user_id, interaction.channel)
-        await interaction.response.send_message(
-            f"🎉 **当たり！**\n"
-            f"答えは：**{answer}**\n"
-            f"💰 獲得：**{reward}** 円\n"
-            f"現在のお金：**{MoneySystem.get_money(user_id)}** 円"
-        )
+
+        # 根據是否雙倍顯示不同訊息
+        if has_double:
+            message = (
+                f"🎉 **当たり！**\n"
+                f"答えは：**{answer}**\n"
+                f"💰 基本報酬：**{base_reward}** 円\n"
+                f"✨ **発財符が発動！報酬2倍！**\n"
+                f"💎 実際獲得：**{actual_reward}** 円 (x2)\n"
+                f"📊 現在の所持金：**{current_money}** 円"
+            )
+        else:
+            message = (
+                f"🎉 **当たり！**\n"
+                f"答えは：**{answer}**\n"
+                f"💰 獲得：**{actual_reward}** 円\n"
+                f"📊 現在の所持金：**{current_money}** 円"
+            )
+
+        await interaction.response.send_message(message)
     else:
         await AchievementSystem.check_and_unlock(user_id, interaction.channel)
         await interaction.response.send_message(
@@ -1455,9 +1506,8 @@ async def guess_number(interaction: discord.Interaction, 数字: app_commands.Ch
             f"答えは：**{answer}**\n"
             f"あなたの予想：**{player_guess}**\n"
             f"💸 損失：**{bet}** 円\n"
-            f"現在のお金：**{MoneySystem.get_money(user_id)}** 円"
+            f"現在の所持金：**{MoneySystem.get_money(user_id)}** 円"
         )
-
 
 @bot.tree.command(name="じゃんけん", description="ボットとじゃんけん勝負（2000円賭けて、勝てば3600円獲得）")
 @app_commands.describe(選択="あなたの選択")
