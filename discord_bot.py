@@ -393,10 +393,10 @@ class GambleSystem:
 
         # ===== 🆕 商城 Buff 加成 =====
         if ShopSystem.has_active_item(user_id, 'gamble_boost'):
-            win_rate += 15.0  # 賭神吊飾 +15%
-            win_rate = min(win_rate, 95.0)  # 上限 95%
+            win_rate += 0.15  # 直接加 0.15，相當於 +15%
+            win_rate = min(win_rate, 0.95)  # 上限改為 0.95
 
-        is_win = random.random() < (win_rate / 100)
+        is_win = random.random() < win_rate
 
         # ===== 追蹤連勝 (成就用) =====
         tracking = AchievementSystem.get_user_tracking(user_id)
