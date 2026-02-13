@@ -1389,20 +1389,45 @@ async def earn_money_math(interaction: discord.Interaction):
             # 設置冷卻
             MoneySystem.set_cooldown(user_id)
 
-            # 獎勵
+            # 計算獎勵
             if random.random() < 0.4:
-                reward = random.randint(20, 300)
+                base_reward = random.randint(20, 300)
             else:
-                reward = random.randint(300, 2200)
+                base_reward = random.randint(300, 2200)
 
-            MoneySystem.add_money(user_id, reward)
+            # 🔧 關鍵修復：先檢查發財符，手動計算翻倍
+            has_double = ShopSystem.has_active_item(user_id, 'double_money')
+
+            if has_double:
+                actual_reward = base_reward * 2
+            else:
+                actual_reward = base_reward
+
+            # 直接加錢（add_money 內部還會再檢查一次發財符，所以這裡會出問題）
+            # 我們需要用不會翻倍的方法
+            MoneySystem.user_money[user_id] = MoneySystem.user_money.get(user_id, 0) + actual_reward
+            MoneySystem._update_stats(user_id, 'total_earned', base_reward)
+
             current_money = MoneySystem.get_money(user_id)
+
+            # 根據是否雙倍顯示不同訊息
+            if has_double:
+                message = (
+                    f"✅ **答對了！**\n"
+                    f"💰 基礎獎勵：**{base_reward}** 元\n"
+                    f"✨ **發財符生效！獎勵翻倍！**\n"
+                    f"💵 實際獲得：**{actual_reward}** 元 (x2)\n"
+                    f"📊 目前金錢：**{current_money}** 元"
+                )
+            else:
+                message = (
+                    f"✅ **答對了！**\n"
+                    f"💰 獲得 **{actual_reward}** 元\n"
+                    f"📊 目前金錢：**{current_money}** 元"
+                )
+
             await AchievementSystem.check_and_unlock(user_id, interaction.channel)
-            await interaction.followup.send(
-                f"✅ **答對了！**\n"
-                f"💰 獲得 **{reward}** 元\n"
-                f"目前金錢：**{current_money}** 元"
-            )
+            await interaction.followup.send(message)
         else:
             MoneySystem.deduct_money(user_id, 200)
             current_money = MoneySystem.get_money(user_id)
@@ -1418,6 +1443,7 @@ async def earn_money_math(interaction: discord.Interaction):
         await interaction.followup.send("⏰ 時間到！沒有回答")
 
 
+# ==================== 🎲 /猜數字 指令修復版 ====================
 @bot.tree.command(name="猜數字", description="猜數字遊戲（1-5，賭 1000 元，猜對得 4500 元）")
 @app_commands.describe(數字="你的猜測（1-5）")
 @app_commands.choices(數字=[
@@ -1428,10 +1454,10 @@ async def earn_money_math(interaction: discord.Interaction):
     app_commands.Choice(name='5', value=5),
 ])
 async def guess_number(interaction: discord.Interaction, 數字: app_commands.Choice[int]):
-    """猜數字遊戲"""
+    """猜數字遊戲（修復版）"""
     user_id = interaction.user.id
     bet = 1000
-    reward = 4500
+    base_reward = 4500
 
     # 檢查金錢
     if not MoneySystem.deduct_money(user_id, bet):
@@ -1449,15 +1475,42 @@ async def guess_number(interaction: discord.Interaction, 數字: app_commands.Ch
     MoneySystem.get_stats(user_id)['games_played'] += 1
 
     if player_guess == answer:
-        MoneySystem.add_money(user_id, reward)
+        # 🔧 關鍵修復：先檢查發財符，手動計算翻倍
+        has_double = ShopSystem.has_active_item(user_id, 'double_money')
+
+        if has_double:
+            actual_reward = base_reward * 2
+        else:
+            actual_reward = base_reward
+
+        # 手動加錢（避免重複翻倍）
+        MoneySystem.user_money[user_id] = MoneySystem.user_money.get(user_id, 0) + actual_reward
+        MoneySystem._update_stats(user_id, 'total_earned', base_reward)
+
         MoneySystem.get_stats(user_id)['games_won'] += 1
+        current_money = MoneySystem.get_money(user_id)
+
         await AchievementSystem.check_and_unlock(user_id, interaction.channel)
-        await interaction.response.send_message(
-            f"🎉 **猜對了！**\n"
-            f"答案是：**{answer}**\n"
-            f"💰 獲得：**{reward}** 元\n"
-            f"目前金錢：**{MoneySystem.get_money(user_id)}** 元"
-        )
+
+        # 根據是否雙倍顯示不同訊息
+        if has_double:
+            message = (
+                f"🎉 **猜對了！**\n"
+                f"答案是：**{answer}**\n"
+                f"💰 基礎獎勵：**{base_reward}** 元\n"
+                f"✨ **發財符生效！獎勵翻倍！**\n"
+                f"💎 實際獲得：**{actual_reward}** 元 (x2)\n"
+                f"📊 目前金錢：**{current_money}** 元"
+            )
+        else:
+            message = (
+                f"🎉 **猜對了！**\n"
+                f"答案是：**{answer}**\n"
+                f"💰 獲得：**{actual_reward}** 元\n"
+                f"📊 目前金錢：**{current_money}** 元"
+            )
+
+        await interaction.response.send_message(message)
     else:
         await AchievementSystem.check_and_unlock(user_id, interaction.channel)
         await interaction.response.send_message(
@@ -4706,7 +4759,7 @@ class ShopSystem:
         },
         'double_money': {
             'name': '💰 發財符',
-            'price': 50000,
+            'price': 300000,
             'description': '所有賺錢收益翻倍 (持續 1 小時)',
             'duration': 3600,
             'type': 'buff',
