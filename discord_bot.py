@@ -17,9 +17,9 @@ from datetime import datetime, timedelta
 
 # ==================== 基本設定 ====================
 TOKEN = 'token'
-FOREGROUND_VIDEO = './fire.mp4'  # 火焰影片路徑
-TRANSFER_FEE_RATE = 0.05  # 轉帳手續費（5%）
-EARN_MONEY_COOLDOWN = 5  # 賺錢冷卻時間（秒）
+FOREGROUND_VIDEO = './fire.mp4'
+TRANSFER_FEE_RATE = 0.05
+EARN_MONEY_COOLDOWN = 5
 
 # 隨機回覆訊息列表
 RANDOM_REPLIES = [
@@ -54,13 +54,8 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-
 # ==================== 金錢系統 ====================
 class MoneySystem:
-    """
-    金錢系統
-    管理用戶的金錢、統計數據和冷卻時間
-    """
     user_money: Dict[int, int] = {}  # 用戶金錢
     user_stats: Dict[int, dict] = {}  # 用戶統計數據
     earn_cooldowns: Dict[int, datetime] = {}  # 賺錢冷卻
@@ -870,7 +865,6 @@ async def checkin_leaderboard(interaction: discord.Interaction):
     await interaction.response.send_message('\n'.join(message_parts))
 
 # ==================== 💾 資料管理系統 ====================
-# ==================== 💾 資料管理系統（穩定版）====================
 class DataManager:
     """資料管理系統 - 穩定版本"""
     DATA_FILE = Path("bot_data.json")
@@ -1083,6 +1077,15 @@ class DataManager:
         if 'fortune_history' in data:
             FortuneSystem.fortune_history = {int(k): v for k, v in data['fortune_history'].items()}
 
+        # 🆕 ===== 加入這段：載入占卜冷卻時間 ===== 🆕
+        if 'fortune_cooldowns' in data:
+            for user_id, cooldown_str in data['fortune_cooldowns'].items():
+                try:
+                    FortuneSystem.fortune_cooldowns[int(user_id)] = datetime.fromisoformat(cooldown_str)
+                except:
+                    pass  # 如果解析失敗就忽略
+        # ============================================
+
     @classmethod
     def _print_load_summary(cls):
         """顯示載入摘要"""
@@ -1175,6 +1178,11 @@ class DataManager:
                 'special_event': fortune.get('special_event')
             }
 
+        fortune_cooldowns_data = {}
+        for user_id, cooldown_time in FortuneSystem.fortune_cooldowns.items():
+            fortune_cooldowns_data[user_id] = cooldown_time.isoformat()
+        # ============================================
+
         # 組合所有資料
         return {
             'money': MoneySystem.user_money,
@@ -1186,8 +1194,9 @@ class DataManager:
             'stock_trade_history': stock_trades,
             'stock_prices': StockSystem.current_prices,
             'stock_price_history': StockSystem.price_history,
-            'fortunes': fortune_data,  # ✅ 修正後
+            'fortunes': fortune_data,
             'fortune_history': FortuneSystem.fortune_history,
+            'fortune_cooldowns': fortune_cooldowns_data,  # 🆕 加入這行
             'achievements': AchievementSystem.user_achievements,
             'achievement_tracking': AchievementSystem.user_tracking,
             'shop_inventory': shop_data,
@@ -3469,6 +3478,8 @@ async def stop_music(interaction: discord.Interaction):
     state['queue'].clear()
     state['current'] = None
     state['loop'] = False
+    state['auto_play'] = False  # 🆕 關鍵修復：停止時也要關閉自動播放
+    state['next_suggestion'] = None  # 🆕 清除推薦
 
     voice_client.stop()
     await interaction.response.send_message("⏹️ 已停止播放並清空佇列")
@@ -6076,14 +6087,6 @@ async def daily_fortune(interaction: discord.Interaction):
         inline=False
     )
 
-    level = fortune['probability']
-    lucky_bar = "★" * min(level, 10) + "☆" * (10 - min(level, 10))
-    embed.add_field(
-        name="🎲 幸運指數",
-        value=f"`{lucky_bar}`",
-        inline=False
-    )
-
     if fortune['id'] == 'supreme':
         embed.add_field(
             name="🎊 恭喜！",
@@ -6460,210 +6463,6 @@ async def help_command(interaction: discord.Interaction):
 
     await interaction.response.send_message(embed=embed)
 
-@bot.tree.command(name="幫助-日本語", description="すべての利用可能なコマンドを表示")
-async def help_command(interaction: discord.Interaction):
-    """ヘルプコマンド"""
-
-    embed = discord.Embed(
-        title="📖 コマンド説明書",
-        description="以下は利用可能なすべてのコマンドです。カテゴリをクリックして詳細を確認してください",
-        color=discord.Color.blue()
-    )
-
-    # 💰 金錢系統
-    embed.add_field(
-        name="💰 金銭システム",
-        value=(
-            "`/查看金錢` - 所持金を確認（対象指定可能）\n"
-            "`/轉帳` - 他のプレイヤーに送金（手数料5%）\n"
-            "`/個人統計` - 個人統計パネルを表示\n"
-            "`/金錢排行榜` - 所持金ランキングを表示"
-        ),
-        inline=False
-    )
-
-    # 🎮 小遊戲
-    embed.add_field(
-        name="🎮 ミニゲーム",
-        value=(
-            "`/賺錢` - 数学問題に答えてお金を稼ぐ（クールタイム5秒）\n"
-            "`/猜數字` - 数当てゲーム（1000元賭け）\n"
-            "`/剪刀石頭布` - じゃんけん勝負（2000元賭け）\n"
-            "`/骰子比大小` - サイコロ勝負（2000元賭け）\n"
-            "`/抽獎` - 運試し"
-        ),
-        inline=False
-    )
-
-    # 🎰 賭博系統
-    embed.add_field(
-        name="🎰 ギャンブルシステム",
-        value=(
-            "`/賭博` - ギャンブルで大金を稼ぐ（必要資金500元）\n"
-            "`/賭博詳情` - 配当率と勝率を確認\n"
-            "`/賭神排行榜` - ギャンブル収益ランキング"
-        ),
-        inline=False
-    )
-
-    # 🎲 抽卡系統
-    embed.add_field(
-        name="🎲 ガチャシステム",
-        value=(
-            "`/單抽` - 単発ガチャ（120元）\n"
-            "`/十連抽` - 10連ガチャ（1200元）\n"
-            "`/查詢保底` - 天井状況を確認\n"
-            "`/歷史抽出` - 星5排出履歴を確認\n"
-            "`/機率說明` - ガチャ確率を確認\n"
-            "`/當前up角色` - ピックアップキャラを確認\n"
-            "`/抽卡排行榜` - ガチャ回数ランキング\n"
-            "`/重置保底` - ガチャ記録をリセット"
-        ),
-        inline=False
-    )
-
-    # 🎒 物品系統
-    embed.add_field(
-        name="🎒 アイテムシステム",
-        value=(
-            "`/查看背包` - ガチャアイテム所持品を確認\n"
-            "`/出售物品` - アイテムを売却してお金に換える\n"
-            "`/一鍵出售` - アイテムを一括売却"
-        ),
-        inline=False
-    )
-
-    # 📅 簽到系統
-    embed.add_field(
-        name="📅 ログインボーナスシステム",
-        value=(
-            "`/簽到` - 毎日ログインして報酬を獲得\n"
-            "`/簽到資訊` - ログイン統計を確認\n"
-            "`/簽到排行榜` - ログインボーナスランキング"
-        ),
-        inline=False
-    )
-
-    # 📈 股票系統
-    embed.add_field(
-        name="📈 株式システム",
-        value=(
-            "`/全部股票` - 株式一覧を素早く確認\n"
-            "`/股票列表` - 取引可能な株式を表示\n"
-            "`/股票詳情` - 株式の詳細情報を確認\n"
-            "`/買入股票` - 株式を購入\n"
-            "`/賣出股票` - 株式を売却\n"
-            "`/我的持倉` - 保有株式を確認\n"
-            "`/交易記錄` - 取引履歴を確認\n"
-            "`/股票排行榜` - 株式長者ランキング"
-        ),
-        inline=False
-    )
-
-    # ⚔️ 戰鬥系統
-    embed.add_field(
-        name="⚔️ バトルシステム",
-        value=(
-            "`/單挑` - 友達と決闘\n"
-            "`/搶劫` - 他のプレイヤーを襲撃（クールタイム3分）"
-        ),
-        inline=False
-    )
-
-    # 🎖️ 牌位系統
-    embed.add_field(
-        name="🎖️ ランクシステム",
-        value=(
-            "`/我的牌位` - 自分のランクを確認\n"
-            "`/查看牌位` - 他のプレイヤーのランクを確認\n"
-            "`/段位排行榜` - ランキングTop10\n"
-            "`/段位說明` - ランクの詳細説明を表示"
-        ),
-        inline=False
-    )
-
-    # 🏆 成就系統
-    embed.add_field(
-        name="🏆 実績システム",
-        value=(
-            "`/我的成就` - 実績進捗を確認\n"
-            "`/成就詳情` - 特定の実績を確認\n"
-            "`/成就排行榜` - 実績解除ランキング"
-        ),
-        inline=False
-    )
-
-    # 🏪 商城系統
-    embed.add_field(
-        name="🏪 ショップシステム",
-        value=(
-            "`/商店` - ショップの商品を確認\n"
-            "`/購買` - ショップアイテムを購入\n"
-            "`/我的道具` - 所持アイテムを確認\n"
-            "`/使用道具` - 消耗品を使用"
-        ),
-        inline=False
-    )
-
-    # 🔮 占卜系統
-    embed.add_field(
-        name="🔮 占いシステム",
-        value=(
-            "`/占卜` - 毎日の運勢占い\n"
-            "`/占卜統計` - 占い履歴を確認\n"
-            "`/占卜排行榜` - 幸運度ランキング"
-        ),
-        inline=False
-    )
-
-    # 🎵 音樂系統
-    embed.add_field(
-        name="🎵 音楽システム",
-        value=(
-            "`/加入` - ボイスチャンネルに参加\n"
-            "`/播放` - 音楽を再生（URLまたはキーワード）\n"
-            "`/暫停` - 音楽を一時停止\n"
-            "`/繼續` - 再生を再開\n"
-            "`/跳過` - 現在の曲をスキップ\n"
-            "`/停止` - 再生を停止してキューをクリア\n"
-            "`/循環` - リピート再生ON/OFF\n"
-            "`/自動播放` - 自動再生ON/OFF\n"
-            "`/播放清單` - 再生キューを確認\n"
-            "`/正在播放` - 現在の曲を表示\n"
-            "`/離開` - ボイスチャンネルから退出\n"
-            "`/播放歷史` - 最近の再生履歴を確認\n"
-            "`/清除音樂歷史` - 再生履歴をクリア\n"
-            "`/重新整理` - 再生リンクを再取得"
-        ),
-        inline=False
-    )
-
-    # 🔥 特效系統
-    embed.add_field(
-        name="🔥 エフェクトシステム",
-        value=(
-            "`/fire` - アバターに炎エフェクトを追加"
-        ),
-        inline=False
-    )
-
-    # 🛠️ 管理員指令
-    embed.add_field(
-        name="🛠️ 管理者コマンド",
-        value=(
-            "`/設定金錢` - 指定ユーザーの所持金を設定\n"
-            "`/調整金錢` - ユーザーの所持金を増減\n"
-            "`/設定up角色` - ピックアップキャラを変更\n"
-            "`/頭像` - ユーザーのアバターを取得\n"
-            "`/banner` - ユーザーのバナーを取得\n"
-        ),
-        inline=False
-    )
-
-    embed.set_footer(text="💡 一部のコマンドは特定の権限または特定のチャンネルでの使用が必要です")
-    embed.timestamp = datetime.now()
-
-    await interaction.response.send_message(embed=embed)
 # ==================== 📸 頭像/Banner 系統 ====================
 
 @bot.tree.command(name="頭像", description="獲取用戶的頭像")
