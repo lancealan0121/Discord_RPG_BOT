@@ -1068,23 +1068,12 @@ class DataManager:
     @classmethod
     def _load_fortune_data(cls, data):
         """載入占卜資料"""
+        # 簡化版，不處理 date
         if 'fortunes' in data:
-            for user_id, fortune_data in data['fortunes'].items():
-                if 'date' in fortune_data and isinstance(fortune_data['date'], str):
-                    fortune_data['date'] = datetime.strptime(fortune_data['date'], '%Y-%m-%d').date()
             FortuneSystem.user_fortunes = {int(k): v for k, v in data['fortunes'].items()}
 
         if 'fortune_history' in data:
             FortuneSystem.fortune_history = {int(k): v for k, v in data['fortune_history'].items()}
-
-        # 🆕 ===== 加入這段：載入占卜冷卻時間 ===== 🆕
-        if 'fortune_cooldowns' in data:
-            for user_id, cooldown_str in data['fortune_cooldowns'].items():
-                try:
-                    FortuneSystem.fortune_cooldowns[int(user_id)] = datetime.fromisoformat(cooldown_str)
-                except:
-                    pass  # 如果解析失敗就忽略
-        # ============================================
 
     @classmethod
     def _print_load_summary(cls):
@@ -1196,7 +1185,6 @@ class DataManager:
             'stock_price_history': StockSystem.price_history,
             'fortunes': fortune_data,
             'fortune_history': FortuneSystem.fortune_history,
-            'fortune_cooldowns': fortune_cooldowns_data,  # 🆕 加入這行
             'achievements': AchievementSystem.user_achievements,
             'achievement_tracking': AchievementSystem.user_tracking,
             'shop_inventory': shop_data,
@@ -5776,8 +5764,6 @@ class FortuneSystem:
 
     # 用戶占卜數據
     user_fortunes: Dict[int, dict] = {}
-    fortune_history: Dict[int, list] = {}
-    fortune_cooldowns: Dict[int, datetime] = {}  # 🆕 冷卻時間追蹤
 
     # 🔧 ===== 冷卻時間設定（改這裡）===== 🔧
     FORTUNE_COOLDOWN = 1  # 預設 12 小時（43200 秒）
@@ -6027,50 +6013,6 @@ class FortuneSystem:
         "⚡ 打雷時你正好在想前任"
     ]
 
-    # 🆕 ===== 冷卻檢查功能 ===== 🆕
-    @classmethod
-    def check_cooldown(cls, user_id: int) -> Tuple[bool, Optional[str]]:
-        """
-        檢查是否可以占卜
-        返回：(是否可以, 錯誤訊息)
-        """
-        # 如果冷卻時間設為 0，直接允許
-        if cls.FORTUNE_COOLDOWN == 0:
-            return True, None
-
-        # 檢查是否有冷卻記錄
-        if user_id not in cls.fortune_cooldowns:
-            return True, None
-
-        # 計算經過時間
-        elapsed = (datetime.now() - cls.fortune_cooldowns[user_id]).total_seconds()
-        remaining = cls.FORTUNE_COOLDOWN - elapsed
-
-        # 冷卻結束
-        if remaining <= 0:
-            return True, None
-
-        # 還在冷卻中，格式化剩餘時間
-        hours = int(remaining // 3600)
-        minutes = int((remaining % 3600) // 60)
-        seconds = int(remaining % 60)
-
-        # 根據剩餘時間選擇顯示格式
-        if hours > 0:
-            time_str = f"{hours}小時{minutes}分鐘"
-        elif minutes > 0:
-            time_str = f"{minutes}分鐘{seconds}秒"
-        else:
-            time_str = f"{seconds}秒"
-
-        error_msg = f"⏰ 占卜冷卻中！\n剩餘時間：**{time_str}**"
-        return False, error_msg
-
-    @classmethod
-    def set_cooldown(cls, user_id: int):
-        """設置冷卻時間"""
-        cls.fortune_cooldowns[user_id] = datetime.now()
-
     @classmethod
     def get_today_fortune(cls, user_id: int) -> dict:
         """獲取今日運勢"""
@@ -6078,30 +6020,24 @@ class FortuneSystem:
         fortune = cls._roll_fortune()
         special_event = random.choice(cls.SPECIAL_EVENTS) if random.random() < 0.3 else None
 
-        # 記錄占卜
-        today = date.today()
+        # 記錄占卜（簡化版，不記錄日期）
         cls.user_fortunes[user_id] = {
-            'date': today,
             'fortune_id': fortune['id'],
             'special_event': special_event
         }
 
-        # 記錄歷史
+        # 記錄歷史（簡化版）
         if user_id not in cls.fortune_history:
             cls.fortune_history[user_id] = []
 
         cls.fortune_history[user_id].append({
-            'date': today.strftime('%Y-%m-%d'),
             'fortune': fortune['name'],
             'fortune_id': fortune['id']
         })
 
-        # 只保留最近 30 天
+        # 只保留最近 30 次
         if len(cls.fortune_history[user_id]) > 30:
             cls.fortune_history[user_id] = cls.fortune_history[user_id][-30:]
-
-        # 🆕 設置冷卻
-        cls.set_cooldown(user_id)
 
         return cls._get_fortune_data(fortune['id'], special_event)
 
@@ -6161,18 +6097,12 @@ class FortuneSystem:
 
 # ==================== 占卜指令 ====================
 
-@bot.tree.command(name="占卜", description="🔮 每日運勢占卜")
+@bot.tree.command(name="占卜", description="🔮 每日運勢占卜（純娛樂）")
 async def daily_fortune(interaction: discord.Interaction):
     """每日占卜"""
     user_id = interaction.user.id
 
-    # 🆕 檢查冷卻
-    can_do, error_msg = FortuneSystem.check_cooldown(user_id)
-    if not can_do:
-        await interaction.response.send_message(error_msg, ephemeral=True)
-        return
-
-    # 獲取今日運勢
+    # 🆕 直接獲取運勢，無冷卻
     fortune_data = FortuneSystem.get_today_fortune(user_id)
     fortune = fortune_data['fortune']
     message = fortune_data['message']
@@ -6181,16 +6111,15 @@ async def daily_fortune(interaction: discord.Interaction):
 
     # 創建華麗的 Embed
     embed = discord.Embed(
-        title=f"🔮 {interaction.user.display_name} 的每日占卜",
+        title=f"🔮 {interaction.user.display_name} 的占卜結果",
         description=f"**{fortune['emoji']} {fortune['title']} {fortune['emoji']}**",
-        color=fortune['color'],
-        timestamp=datetime.now()
+        color=fortune['color']
     )
 
     embed.set_thumbnail(url=interaction.user.display_avatar.url)
 
     embed.add_field(
-        name="📊 今日運勢",
+        name="📊 運勢",
         value=f"# {fortune['name']}",
         inline=False
     )
@@ -6218,32 +6147,18 @@ async def daily_fortune(interaction: discord.Interaction):
     if fortune['id'] == 'supreme':
         embed.add_field(
             name="🎊 恭喜！",
-            value="你今天抽到了萬中無一的「極吉」！\n這是 1% 的機率！今天就是你的日子！",
+            value="你抽到了萬中無一的「極吉」！這是 1% 的機率！",
             inline=False
         )
     elif fortune['id'] == 'catastrophe':
         embed.add_field(
             name="⚠️ 警告",
-            value="今天運勢極差，建議你什麼都不要做...\n真的，聽我的。",
+            value="運勢極差，建議今天什麼都不要做...",
             inline=False
         )
 
-    # 🆕 顯示下次占卜時間
-    if FortuneSystem.FORTUNE_COOLDOWN > 0:
-        next_time = datetime.now() + timedelta(seconds=FortuneSystem.FORTUNE_COOLDOWN)
-        hours = FortuneSystem.FORTUNE_COOLDOWN // 3600
-        minutes = (FortuneSystem.FORTUNE_COOLDOWN % 3600) // 60
-
-        if hours > 0:
-            cooldown_text = f"{hours}小時"
-        elif minutes > 0:
-            cooldown_text = f"{minutes}分鐘"
-        else:
-            cooldown_text = f"{FortuneSystem.FORTUNE_COOLDOWN}秒"
-
-        embed.set_footer(text=f"⏰ 下次占卜時間：{cooldown_text}後 | 娛樂性質，不影響遊戲數值")
-    else:
-        embed.set_footer(text="💡 無冷卻限制，隨時可占卜 | 娛樂性質，不影響遊戲數值")
+    # 🆕 改成無冷卻提示
+    embed.set_footer(text="💡 純娛樂性質，不影響遊戲數值 | 可隨時占卜")
 
     await interaction.response.send_message(embed=embed)
 
