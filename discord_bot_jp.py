@@ -1125,8 +1125,8 @@ class DataManager:
 
     @classmethod
     def _prepare_all_data(cls) -> dict:
-        """全データを準備"""
-        # チェックインデータ
+        """準備所有資料"""
+        # 簽到資料
         checkin_data = {}
         for user_id, user_data in DailyCheckIn.user_checkin.items():
             checkin_data[user_id] = {
@@ -1136,7 +1136,7 @@ class DataManager:
                 'total_earned': user_data.get('total_earned', 0)
             }
 
-        # ショップアイテム
+        # 商城道具
         shop_data = {}
         for user_id, items in ShopSystem.user_inventory.items():
             shop_data[user_id] = {}
@@ -1147,7 +1147,7 @@ class DataManager:
                     'purchased_at': item_data['purchased_at'].isoformat()
                 }
 
-        # 株式取引記録
+        # 股票交易記錄
         stock_trades = {}
         for user_id, trades in StockSystem.trade_history.items():
             stock_trades[user_id] = [
@@ -1155,22 +1155,17 @@ class DataManager:
                 for trade in trades
             ]
 
-        # 🆕 占いデータ（dateオブジェクトを処理）
+        # 🆕 占卜資料（簡化版，不處理 datetime）
         fortune_data = {}
         for user_id, fortune in FortuneSystem.user_fortunes.items():
             fortune_data[user_id] = {
-                'date': fortune['date'].strftime('%Y-%m-%d') if isinstance(fortune.get('date'), date) else fortune.get(
-                    'date'),
                 'fortune_id': fortune.get('fortune_id'),
                 'special_event': fortune.get('special_event')
             }
 
-        fortune_cooldowns_data = {}
-        for user_id, cooldown_time in FortuneSystem.fortune_cooldowns.items():
-            fortune_cooldowns_data[user_id] = cooldown_time.isoformat()
         # ============================================
 
-        # 全データを組み合わせ
+        # 組合所有資料
         return {
             'money': MoneySystem.user_money,
             'stats': MoneySystem.user_stats,
