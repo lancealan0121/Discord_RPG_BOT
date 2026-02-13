@@ -86,16 +86,6 @@ sudo apt install ffmpeg  # Ubuntu/Debian
 sudo yum install ffmpeg  # CentOS/RHEL
 ```
 
-### 2. 克隆專案
-```bash
-git clone https://github.com/your-username/discord-game-bot-jp.git
-cd discord-game-bot-jp
-```
-
-### 3. 安裝依賴
-```bash
-pip install -r requirements.txt
-```
 
 ### 4. 準備火焰影片
 - 下載火焰特效影片（建議黑背景或綠幕）
