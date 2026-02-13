@@ -3980,6 +3980,15 @@ class DuelSystem:
         "😈 **{attacker}** がインフィニティガントレットを取り出し、指を鳴らした... **{defender}** は灰になった。",
         "🛑 **{attacker}** が「ザ・ワールド」で時を止め、ロードローラーを投げつけた！ **{defender}** は無抵抗！",
         "🔧 **{attacker}** がこのゲームのバグを発見、**{defender}** のHPバーを削除した。",
+        "🗡️ **{attacker}** が「王の財宝」を召喚、無数の宝具が天から降り注ぐ！ **{defender}** は即死！",
+        "💀 **{attacker}** がデスノートを使用、**{defender}** の名前を書き込んだ...",
+        "🔥 **{attacker}** が「炎炎烈日」を発動、**{defender}** は蒸発した！",
+        "❄️ **{attacker}** が「絶対零度」を使用、**{defender}** は氷の彫刻になって砕け散った！",
+        "⚡ **{attacker}** が千鳥を放ち、**{defender}** の心臓を貫通！",
+        "🌊 **{attacker}** が津波を召喚、**{defender}** は深海に飲み込まれ二度と浮かんでこなかった...",
+        "💥 **{attacker}** がビッグバンを使用、**{defender}** は骨も残らない！",
+        "🎯 **{attacker}** がオートエイムチートを起動、ヘッドショット一撃必殺！",
+        "🚀 **{attacker}** が核ミサイルを発射、**{defender}** のいる都市ごと消滅...",
     ]
 
     # 2. クリティカル (15%) - ダメージ 30~50
@@ -3991,6 +4000,24 @@ class DuelSystem:
         "🚗 **{attacker}** が異世界トラックを召喚、**{defender}** を高速で轢いた！ (転生クリティカル)",
         "🐉 **{attacker}** が青眼の白龍を召喚、滅びの爆裂疾風弾を発動！ (砕け散れ玉砕！)",
         "🧠 **{attacker}** が **{defender}** の黒歴史を暴露、巨大な精神ダメージ！ (真実ダメージ)",
+        "⚔️ **{attacker}** が「抜刀術」を使用、**{defender}** は反応すらできなかった！ (先制攻撃)",
+        "🦵 **{attacker}** が「無影脚」を繰り出し、**{defender}** を10メートル蹴り飛ばした！",
+        "👊 **{attacker}** が「北斗百裂拳」を使用、**{defender}** はもう死んでいる！",
+        "🎸 **{attacker}** が魔音を奏で、**{defender}** の鼓膜が破裂！ (音波攻撃)",
+        "🔨 **{attacker}** がミョルニルを振り上げ、一撃で **{defender}** を地底に叩き込んだ！",
+        "🏹 **{attacker}** が必殺の矢を放ち、**{defender}** の急所に命中！",
+        "💎 **{attacker}** が「ダイヤモンドパンチ」を使用、**{defender}** の鎧が粉砕！",
+        "🌪️ **{attacker}** が竜巻を召喚、**{defender}** は空に巻き上げられた！",
+        "☄️ **{attacker}** が隕石を召喚、**{defender}** の頭に直撃！",
+        "🦈 **{attacker}** がサメを召喚、**{defender}** の足が食いちぎられた！",
+        "🕷️ **{attacker}** が猛毒クモを放ち、**{defender}** は毒に侵された！",
+        "🔪 **{attacker}** が「バックスタブ」を使用、300%ダメージ！",
+        "💀 **{attacker}** が「死の宣告」を使用、**{defender}** は呪われた！",
+        "⚡ **{attacker}** が「雷霆万鈞」を放ち、**{defender}** は黒焦げに！",
+        "🧨 **{attacker}** がC4爆薬を投げ、**{defender}** は爆風で吹き飛んだ！",
+        "🎭 **{attacker}** が「幻術」を使用、**{defender}** は自分自身を攻撃した！",
+        "🌙 **{attacker}** が「月読」を発動、**{defender}** は幻境で72時間拷問された！",
+        "🔥 **{attacker}** が「天照」を使用、黒い炎が **{defender}** を焼き尽くした！",
     ]
 
     # 3. 防御/回復 (15%) - 回復 15~30
@@ -4002,6 +4029,19 @@ class DuelSystem:
         "💉 **{attacker}** が救急キットを取り出し、絆創膏を貼った。(HP +{heal})",
         "🛡️ **{attacker}** が「絶対防御」を発動、ついでに昼寝した。(HP +{heal})",
         "✨ **{attacker}** が女神の加護を受け、聖光が傷を癒した。(HP +{heal})",
+        "🍖 **{attacker}** が焼肉をかじり、体力が回復！(HP +{heal})",
+        "☕ **{attacker}** がコーヒーを飲んで、元気いっぱい！(HP +{heal})",
+        "🍜 **{attacker}** がラーメンを食べて、HPバーが満タンに！(HP +{heal})",
+        "🧃 **{attacker}** がエナジードリンクを飲んで、活力全開！(HP +{heal})",
+        "🍎 **{attacker}** がリンゴを食べて、医者が遠ざかる。(HP +{heal})",
+        "🌟 **{attacker}** が回復パックを拾った、運がいい！(HP +{heal})",
+        "💤 **{attacker}** が少し寝て、傷が癒えた。(HP +{heal})",
+        "🔮 **{attacker}** が治療術を使用、傷口が光って治癒。(HP +{heal})",
+        "🎵 **{attacker}** が癒しの音楽を聴いて、気分が良くなった。(HP +{heal})",
+        "🌿 **{attacker}** が草タイプスキル「光合成」を使用。(HP +{heal})",
+        "💧 **{attacker}** が聖水を一口飲み、怪我が回復。(HP +{heal})",
+        "🕊️ **{attacker}** が平和の鳩を召喚、癒しの力をもたらした。(HP +{heal})",
+        "🌈 **{attacker}** が虹を見て、気分が良くなり怪我が軽減。(HP +{heal})",
     ]
 
     # 4. 通常攻撃 (50%) - ダメージ 10~25
@@ -4016,6 +4056,47 @@ class DuelSystem:
         "📱 **{attacker}** がNokia 3310で **{defender}** の額を殴った。",
         "📢 **{attacker}** が **{defender}** の耳元で「金返せ」と叫んだ！",
         "🏀 **{attacker}** がドリブル突破を使い、ついでに **{defender}** に肘打ち。",
+        "🪑 **{attacker}** が椅子を持ち上げ、WWEレスラーが憑依！",
+        "🥄 **{attacker}** がスプーンで **{defender}** を一すくい！",
+        "🧹 **{attacker}** がほうきを持ち、**{defender}** をゴミのように掃いた！",
+        "🔔 **{attacker}** が鈴を **{defender}** の耳元で鳴らし、うるさい！",
+        "📚 **{attacker}** が分厚い辞書で **{defender}** の頭を殴った！",
+        "🥊 **{attacker}** がストレートパンチ、**{defender}** の鼻に命中！",
+        "🦶 **{attacker}** が **{defender}** の足を踏んだ、痛い！",
+        "👋 **{attacker}** が **{defender}** にビンタ一発！",
+        "🪛 **{attacker}** がドライバーで **{defender}** を突いた！",
+        "🔨 **{attacker}** がハンマーで **{defender}** の膝を叩いた！",
+        "🎯 **{attacker}** がダーツを投げ、**{defender}** の尻に刺さった！",
+        "🪃 **{attacker}** がブーメランを投げ、**{defender}** の後頭部に当たった！",
+        "🎱 **{attacker}** がビリヤードボールを **{defender}** に投げつけた！",
+        "🏓 **{attacker}** がラケットで **{defender}** の顔を叩いた！",
+        "🥍 **{attacker}** がバットで **{defender}** の頭を叩いた！",
+        "🎾 **{attacker}** がサーブ、直接 **{defender}** の急所に命中！",
+        "⛳ **{attacker}** がゴルフクラブを振り、**{defender}** に当たった！",
+        "🏏 **{attacker}** がクリケットバットで **{defender}** を打った！",
+        "🏑 **{attacker}** がホッケースティックで **{defender}** の足を払った！",
+        "🥌 **{attacker}** がカーリングストーンを押し出し、**{defender}** の足の指に当たった！",
+        "🎿 **{attacker}** がスキーポールで **{defender}** を突いた！",
+        "🛹 **{attacker}** がスケートボードを **{defender}** の顔に投げつけた！",
+        "🛼 **{attacker}** がローラースケートを履いて **{defender}** に突進！",
+        "🚴 **{attacker}** が自転車で **{defender}** を撥ね飛ばした！",
+        "🛴 **{attacker}** がキックボードのハンドルで **{defender}** の腹を突いた！",
+        "🏍️ **{attacker}** がバイクで **{defender}** を轢いた！",
+        "🚙 **{attacker}** が車で **{defender}** を撥ね飛ばした！",
+        "✈️ **{attacker}** が紙飛行機で **{defender}** の目を狙った！",
+        "🪁 **{attacker}** が凧で **{defender}** の首を絡めた！",
+        "🎈 **{attacker}** が風船で **{defender}** の頭を叩いた、軽いけど鬱陶しい！",
+        "🎀 **{attacker}** がリボンで **{defender}** の首を絞めた！",
+        "🧵 **{attacker}** が糸で **{defender}** の手足を縛った！",
+        "🪡 **{attacker}** が針で **{defender}** を刺した！",
+        "✂️ **{attacker}** がハサミで **{defender}** の髪を切った！",
+        "📌 **{attacker}** が画鋲で **{defender}** の尻を刺した！",
+        "📍 **{attacker}** がピンで **{defender}** を刺した！",
+        "🔗 **{attacker}** が鎖で **{defender}** を打った！",
+        "🪝 **{attacker}** がフックで **{defender}** の服を引っ掛けた！",
+        "🧲 **{attacker}** が磁石で **{defender}** の入れ歯を吸い取った！",
+        "🔋 **{attacker}** が電池で **{defender}** を感電させた！",
+        "💡 **{attacker}** が電球で **{defender}** の頭を殴った！",
     ]
 
     # 5. ミス (19%) - ダメージなし
@@ -4027,6 +4108,30 @@ class DuelSystem:
         "🚫 **{attacker}** の攻撃を **{defender}** が顔で受け止めた！(しかし **{defender}** の面の皮が厚すぎて無傷)",
         "🐛 **{attacker}** がバグに遭遇、スキルはクールダウン中...",
         "💃 **{attacker}** が突然ブレイクダンスを始め、攻撃機会を逃した。",
+        "🎮 **{attacker}** のコントローラーが切断、サーバーに接続できない！",
+        "📞 **{attacker}** のママから電話、家に帰ってご飯を食べなさいと。",
+        "🦟 **{attacker}** が蚊に刺され、そこを掻いている。",
+        "🌞 **{attacker}** が太陽に目が眩んで、何も見えない。",
+        "💩 **{attacker}** が犬のウンチを踏んで滑って転んだ、攻撃失敗。",
+        "🍌 **{attacker}** がバナナの皮を踏んで、華麗に転倒。",
+        "🕳️ **{attacker}** が罠に落ちて、這い上がれない。",
+        "🌧️ **{attacker}** が雨に濡れて、凍えて動けない。",
+        "❄️ **{attacker}** の手が凍えて、武器を握れない。",
+        "🔥 **{attacker}** が火に触れて、武器を落とした。",
+        "💧 **{attacker}** が水溜まりで滑って、犬食いで転倒。",
+        "🌪️ **{attacker}** が風に煽られて、攻撃が外れた。",
+        "⚡ **{attacker}** が静電気でビリッとして、手が痺れた。",
+        "🦅 **{attacker}** が鷹にカツラを奪われて、驚いて攻撃できない。",
+        "🐝 **{attacker}** が蜂に刺されて、痛くて跳び上がった。",
+        "🦂 **{attacker}** がサソリに刺されて、毒で麻痺した。",
+        "🐍 **{attacker}** が蛇に驚いて、怖くて動けない。",
+        "🦎 **{attacker}** がトカゲに這われて、痒くてたまらない。",
+        "🐸 **{attacker}** がカエルに顔に飛びつかれて、視界が遮られた。",
+        "🦗 **{attacker}** がコオロギの鳴き声で気が散った。",
+        "🪰 **{attacker}** がハエに煩わされて、ずっとハエを追い払っている。",
+        "🕸️ **{attacker}** がクモの巣に絡まって、身動きできない。",
+        "🦇 **{attacker}** がコウモリにぶつかられて、気絶した。",
+        "🐁 **{attacker}** がネズミに驚いて、跳び上がって叫んだ。",
     ]
 
     @staticmethod
@@ -4037,7 +4142,7 @@ class DuelSystem:
         fill = int(percentage * length)
         empty = length - fill
 
-        # HPに応じて色を変える (ここは装飾記号のみ、Discord Embedの色は別途変更)
+        # HPに応じて色を変える
         status_icon = "💚"
         if percentage < 0.5: status_icon = "💛"
         if percentage < 0.2: status_icon = "❤️"
@@ -4055,6 +4160,9 @@ class DuelSystem:
         max_hp = 100
         hp = {player.id: max_hp, target.id: max_hp}
 
+        # 🆕 復活装置使用追跡
+        used_revive = {player.id: False, target.id: False}
+
         # 初期メッセージ作成
         embed = discord.Embed(
             title="⚔️ 世紀の対決開始！",
@@ -4069,16 +4177,15 @@ class DuelSystem:
 
         # 戦闘変数
         turn_count = 0
-        log_history = []  # 戦闘過程を記録
 
-        # 先攻決定 (50% 確率)
+        # 先攻決定
         attacker = player if random.choice([True, False]) else target
         defender = target if attacker == player else player
 
         # 双方がまだHPがある間
-        while hp[player.id] > 0 and hp[target.id] > 0:
+        while True:
             turn_count += 1
-            await asyncio.sleep(3.5)  # ⏳ 少し時間を長くして皆が文字を見られるように
+            await asyncio.sleep(3.5)
 
             # ===== 確率と数値判定 =====
             rand = random.uniform(0, 100)
@@ -4092,7 +4199,7 @@ class DuelSystem:
                 damage = 9999
                 template = random.choice(DuelSystem.GOD_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
-                current_color = discord.Color.purple()  # 神話色
+                current_color = discord.Color.purple()
 
             # 2. クリティカル (15%)
             elif rand < 16:
@@ -4100,16 +4207,15 @@ class DuelSystem:
                 template = random.choice(DuelSystem.CRIT_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
                 action_text += f"\n💥 **{damage} ポイントのクリティカルダメージ！**"
-                current_color = discord.Color.dark_red()  # クリティカル赤
+                current_color = discord.Color.dark_red()
 
             # 3. 防御/回復 (15%)
             elif rand < 31:
                 heal = random.randint(15, 30)
-                # 上限を超えないように
                 hp[attacker.id] = min(max_hp, hp[attacker.id] + heal)
                 template = random.choice(DuelSystem.HEAL_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name, heal=heal)
-                current_color = discord.Color.green()  # 回復緑
+                current_color = discord.Color.green()
 
             # 4. 通常攻撃 (50%)
             elif rand < 81:
@@ -4117,20 +4223,17 @@ class DuelSystem:
                 template = random.choice(DuelSystem.NORMAL_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
                 action_text += f"\n💢 **{damage}** ポイントのダメージを与えた。"
-                current_color = discord.Color.orange()  # 通常攻撃オレンジ
+                current_color = discord.Color.orange()
 
             # 5. ミス (19%)
             else:
                 template = random.choice(DuelSystem.MISS_TEXTS)
                 action_text = template.format(attacker=attacker.display_name, defender=defender.display_name)
-                current_color = discord.Color.blue()  # ミス青
+                current_color = discord.Color.blue()
 
             # ===== HP計算 =====
             if damage > 0:
                 hp[defender.id] -= damage
-
-            # 戦闘記録を更新 (最新1件の大きいもの + 以前の2件の小さいもの、長すぎないように)
-            # ここを変更：毎回現在ターンの詳細動作のみ表示、下に小さい文字で履歴を表示
 
             log_str = f"第 {turn_count} ターン：\n{action_text}"
 
@@ -4147,28 +4250,53 @@ class DuelSystem:
 
             await message.edit(embed=embed)
 
-            # 攻守交代 (一方が既に死んでいる場合、ループから抜ける)
-            if hp[player.id] <= 0 or hp[target.id] <= 0:
-                break
+            # 🆕 ===== 修正：復活装置チェックロジック =====
+            # HP <= 0 かつ未使用の場合のみトリガー
+            if hp[player.id] <= 0 and not used_revive[player.id]:
+                if ShopSystem.has_active_item(player.id, 'revive_device'):
+                    ShopSystem.use_consumable(player.id, 'revive_device')
+                    hp[player.id] = 50  # 50 HP で復活
+                    used_revive[player.id] = True  # 使用済みマーク
 
+                    revive_embed = discord.Embed(
+                        title="⚡ 復活装置起動！",
+                        description=f"**{player.display_name}** が復活装置を使用、50 HP 回復！",
+                        color=discord.Color.blue()
+                    )
+                    await message.edit(embed=revive_embed)
+                    await asyncio.sleep(2)
+
+            if hp[target.id] <= 0 and not used_revive[target.id]:
+                if ShopSystem.has_active_item(target.id, 'revive_device'):
+                    ShopSystem.use_consumable(target.id, 'revive_device')
+                    hp[target.id] = 50
+                    used_revive[target.id] = True
+
+                    revive_embed = discord.Embed(
+                        title="⚡ 復活装置起動！",
+                        description=f"**{target.display_name}** が復活装置を使用、50 HP 回復！",
+                        color=discord.Color.blue()
+                    )
+                    await message.edit(embed=revive_embed)
+                    await asyncio.sleep(2)
+
+            # 本当に戦闘終了かチェック（両方とも復活済みまたは本当に死亡）
+            if hp[player.id] <= 0 and used_revive[player.id]:
+                break  # プレイヤー1本当に死亡
+            if hp[target.id] <= 0 and used_revive[target.id]:
+                break  # プレイヤー2本当に死亡
+            if hp[player.id] <= 0 and not ShopSystem.has_active_item(player.id, 'revive_device'):
+                break  # プレイヤー1復活装置なし
+            if hp[target.id] <= 0 and not ShopSystem.has_active_item(target.id, 'revive_device'):
+                break  # プレイヤー2復活装置なし
+
+            # 攻守交代
             attacker, defender = defender, attacker
 
         # ===== 戦闘終了 =====
         await asyncio.sleep(1.5)
 
-        if hp[player.id] <= 0 and ShopSystem.has_active_item(player.id, 'revive_device'):
-            ShopSystem.use_consumable(player.id, 'revive_device')
-            hp[player.id] = 50  # 50 HP で復活
-
-            revive_embed = discord.Embed(
-                title="⚡ 復活装置起動！",
-                description=f"**{player.display_name}** が復活装置を使用、満HP復活！",
-                color=discord.Color.blue()
-            )
-            await message.edit(embed=revive_embed)
-            await asyncio.sleep(2)
-
-        # デュエル終了後（元のコード）
+        # 勝者判定
         winner = player if hp[player.id] > 0 else target
         loser = target if winner == player else player
 
@@ -4193,7 +4321,7 @@ class DuelSystem:
             inline=False
         )
 
-        # ===== 🆕 ポイント変動表示 =====
+        # ポイント変動表示
         winner_rank_info = RankingSystem.get_rank_info(winner_change['new_rank'])
         loser_rank_info = RankingSystem.get_rank_info(loser_change['new_rank'])
 
