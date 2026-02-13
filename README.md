@@ -109,7 +109,7 @@ pip install -r requirements.txt
 ### 5. 設定 Bot Token
 1. 前往 [Discord Developer Portal](https://discord.com/developers/applications)
 2. 創建應用程式 → Bot → 複製 Token
-3. 在 `discord_bot_jp.py` 第 16 行替換：
+3. 在 `discord_bot_jp.py` 替換：
 ```python
 TOKEN = '你的_Bot_Token'
 ```
@@ -241,13 +241,10 @@ discord-game-bot-jp/
 ### 冷卻時間調整
 在 `discord_bot_jp.py` 中修改：
 ```python
-# 賺錢冷卻（第 15 行）
 EARN_MONEY_COOLDOWN = 5  # 秒
 
-# 搶劫冷卻（第 2558 行）
 ROB_COOLDOWN = 180  # 秒
 
-# 占卜冷卻（第 4329 行）
 FORTUNE_COOLDOWN = 43200  # 秒（預設 12 小時）
 ```
 
