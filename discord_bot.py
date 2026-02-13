@@ -10,7 +10,6 @@ import random
 import asyncio
 import json
 import shutil
-from datetime import datetime, date
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 from datetime import datetime, timedelta
@@ -1146,14 +1145,18 @@ class DataManager:
                 shop_data[user_id][item_id] = {
                     'quantity': item_data['quantity'],
                     'expires': item_data['expires'].isoformat() if item_data.get('expires') else None,
-                    'purchased_at': item_data['purchased_at'].isoformat()
+                    'purchased_at': item_data['purchased_at'].isoformat() if item_data.get('purchased_at') else None
+                    # 🔧 加上檢查
                 }
 
         # 股票交易記錄
         stock_trades = {}
         for user_id, trades in StockSystem.trade_history.items():
             stock_trades[user_id] = [
-                {**trade, 'time': trade['time'].isoformat()}
+                {
+                    **{k: v for k, v in trade.items() if k != 'time'},  # 🔧 排除 time
+                    'time': trade['time'].isoformat() if 'time' in trade and trade['time'] else None  # 🔧 安全轉換
+                }
                 for trade in trades
             ]
 
@@ -1164,8 +1167,6 @@ class DataManager:
                 'fortune_id': fortune.get('fortune_id'),
                 'special_event': fortune.get('special_event')
             }
-
-        # ============================================
 
         # 組合所有資料
         return {
@@ -1185,6 +1186,7 @@ class DataManager:
             'shop_inventory': shop_data,
             'rankings': RankingSystem.user_rankings
         }
+
 
     @classmethod
     def _print_save_summary(cls):
