@@ -3461,6 +3461,8 @@ async def stop_music(interaction: discord.Interaction):
     state['queue'].clear()
     state['current'] = None
     state['loop'] = False
+    state['auto_play'] = False
+    state['next_suggestion'] = None
 
     voice_client.stop()
     await interaction.response.send_message("⏹️ 再生を停止してキューをクリアしました")
